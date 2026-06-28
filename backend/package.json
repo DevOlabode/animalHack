@@ -1,14 +1,16 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "A shared digital healthcare platform for pets where pet owners and veterinary clinics can manage medical records, book appointments, track diagnoses, prescribe treatments, and monitor follow-up care from a single system.",
+  "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "node --test tests/"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Samuel Olabode",
+  "license": "MPL-2.0",
   "type": "commonjs",
   "dependencies": {
     "dotenv": "^17.4.2",
