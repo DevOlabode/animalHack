@@ -7,10 +7,14 @@ const cors = require('cors');
 const authRoutes = require('../routes/auth');
 
 const frontendOrigin = process.env.FRONTEND_ORIGIN;
+
 app.use(cors({
     origin: frontendOrigin, 
     credentials:true
 }));
+
+require('../config/db')();
+
 app.use(express.json());
 
 app.get('/health', (_req, res) =>{
