@@ -21,17 +21,16 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['owner', 'vet', 'admin'],
-    default: 'owner'
+    enum: ['pet_owner', 'owner', 'vet', 'admin'],
+    default: 'pet_owner'
   }
 }, {
   timestamps: true
 });
 
-userSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) return next();
+userSchema.pre('save', async function() {
+  if (!this.isModified('password')) return;
   this.password = await bcrypt.hash(this.password, 10);
-  next();
 });
 
 userSchema.methods.comparePassword = async function(password) {
@@ -50,7 +49,8 @@ userSchema.statics.findByEmail = async function(email) {
 userSchema.statics.create = async function(data) {
   const existing = await this.findOne({ email: data.email.toLowerCase() });
   if (existing) throw new Error('User already exists');
-  return this.create(data);
+  const user = new this(data);
+  return user.save();
 };
 
 userSchema.statics.verifyPassword = async function(user, password) {

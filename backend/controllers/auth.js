@@ -23,11 +23,9 @@ const signUp = async (req, res) => {
       });
     }
 
-    const user = new User({ email, password, name, role });
+    const user = await User.create({ email, password, name, role });
     const token = generateToken(user);
     const safeUser = User.toSafeUser(user);
-
-    await User.save();
 
     res.status(201).json({
       status: 'success',
@@ -35,6 +33,8 @@ const signUp = async (req, res) => {
       data: { user: safeUser, token }
     });
   } catch (error) {
+    console.error('Signup error:', error);
+    console.error('Signup error stack:', error.stack);
     if (error.message === 'User already exists') {
       return res.status(409).json({
         status: 'error',
