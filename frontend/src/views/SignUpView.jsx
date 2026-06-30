@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3000/api';
+const API_BASE = '/api';
 
 export default function SignUpView() {
   const [name, setName] = useState('');
@@ -14,6 +14,7 @@ export default function SignUpView() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
 
     if (password !== confirmPassword) {
       setError('Passwords do not match');
@@ -35,18 +36,25 @@ export default function SignUpView() {
       });
 
       const data = await response.json();
+      console.log(data);
 
       if (!response.ok) {
         throw new Error(data.message || 'Sign up failed');
       }
 
+      console.log(response.ok);
+
       localStorage.setItem('token', data.data.token);
       localStorage.setItem('user', JSON.stringify(data.data.user));
       window.location.href = '/';
     } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+      console.error("Fetch error:", err);
+    
+      if (err instanceof TypeError) {
+        setError("Could not connect to the server.");
+      } else {
+        setError(err.message);
+      }
     }
   };
 

@@ -23,9 +23,11 @@ const signUp = async (req, res) => {
       });
     }
 
-    const user = await User.create({ email, password, name, role });
+    const user = new User({ email, password, name, role });
     const token = generateToken(user);
     const safeUser = User.toSafeUser(user);
+
+    await User.save();
 
     res.status(201).json({
       status: 'success',

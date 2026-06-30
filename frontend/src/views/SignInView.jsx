@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import {Link} from 'react-router-dom';
 
 const API_BASE = '/api';
 
@@ -82,6 +83,9 @@ export default function SignInView() {
           {loading ? 'Signing in...' : 'Sign In'}
         </button>
       </form>
+      <p style={{ marginTop: '1rem', textAlign: 'center' }}>
+        Don't have an account? <Link to="/signup">Sign Up</Link>
+      </p>
     </div>
   );
 }
