@@ -1,7 +1,9 @@
+import SignInView from './views/SignInView';
+
 function App() {
   return (
     <div>
-      <h2>Animal Hack Hackathon Project</h2>
+      <SignInView />
     </div>
   )
 }
