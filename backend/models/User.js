@@ -1,46 +1,64 @@
+const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
-const users = new Map();
-
-class User {
-  static async create({ email, password, name, role = 'pet_owner' }) {
-    const existingUser = users.get(email);
-    if (existingUser) {
-      throw new Error('User already exists');
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const user = {
-      id: Date.now().toString(),
-      email,
-      password: hashedPassword,
-      name,
-      role,
-      createdAt: new Date().toISOString()
-    };
-    users.set(email, user);
-    return user;
+const userSchema = new mongoose.Schema({
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    lowercase: true,
+    trim: true
+  },
+  password: {
+    type: String,
+    required: true,
+    minlength: 6
+  },
+  name: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  role: {
+    type: String,
+    enum: ['owner', 'vet', 'admin'],
+    default: 'owner'
   }
+}, {
+  timestamps: true
+});
 
-  static async findByEmail(email) {
-    return users.get(email) || null;
-  }
+userSchema.pre('save', async function(next) {
+  if (!this.isModified('password')) return next();
+  this.password = await bcrypt.hash(this.password, 10);
+  next();
+});
 
-  static async findById(id) {
-    for (const user of users.values()) {
-      if (user.id === id) return user;
-    }
-    return null;
-  }
+userSchema.methods.comparePassword = async function(password) {
+  return bcrypt.compare(password, this.password);
+};
 
-  static async verifyPassword(user, password) {
-    return bcrypt.compare(password, user.password);
-  }
+userSchema.methods.toSafeObject = function() {
+  const { password, ...safe } = this.toObject();
+  return safe;
+};
 
-  static toSafeUser(user) {
-    const { password, ...safeUser } = user;
-    return safeUser;
-  }
-}
+userSchema.statics.findByEmail = async function(email) {
+  return this.findOne({ email: email.toLowerCase() });
+};
 
-module.exports = User;
+userSchema.statics.create = async function(data) {
+  const existing = await this.findOne({ email: data.email.toLowerCase() });
+  if (existing) throw new Error('User already exists');
+  return this.create(data);
+};
+
+userSchema.statics.verifyPassword = async function(user, password) {
+  return user.comparePassword(password);
+};
+
+userSchema.statics.toSafeUser = function(user) {
+  return user.toSafeObject();
+};
+
+module.exports = mongoose.model('User', userSchema);
