@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 
-export default function HomePage() {
+export default function NotLoggedInHome() {
 
   return (
     <div style={{ maxWidth: 600, margin: '4rem auto', padding: '2rem', textAlign: 'center' }}>

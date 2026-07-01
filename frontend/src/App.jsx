@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import HomePage from './views/HomePage';
+import NotLoggedInHome from './views/NotLoggedInHome'
 import SignInView from './views/SignInView';
 import SignUpView from './views/SignUpView';
 
@@ -7,7 +7,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<HomePage />} />
+        <Route path="/" element={< NotLoggedInHome/>} />
         <Route path="/signin" element={<SignInView />} />
         <Route path="/signup" element={<SignUpView />} />
       </Routes>
