@@ -1,10 +1,6 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 export default function HomePage() {
-  const navigate = useNavigate();
-
-  const handleSignIn = () => navigate('/signin');
-  const handleSignUp = () => navigate('/signup');
 
   return (
     <div style={{ maxWidth: 600, margin: '4rem auto', padding: '2rem', textAlign: 'center' }}>
