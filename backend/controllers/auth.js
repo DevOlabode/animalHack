@@ -91,7 +91,15 @@ const signIn = async (req, res) => {
   }
 };
 
+const logout = async (req, res) => {
+  res.status(200).json({
+    status: "success",
+    message: "Logged out successfully",
+  });
+};
+
 module.exports = {
   signUp,
-  signIn
+  signIn,
+  logout
 };
