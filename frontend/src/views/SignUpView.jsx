@@ -118,10 +118,9 @@ export default function SignUpView() {
         </div>
         <button
           type="submit"
-          disabled={loading}
           style={{ width: '100%', padding: '0.75rem', cursor: loading ? 'not-allowed' : 'pointer' }}
         >
-          {loading ? 'Creating account...' : 'Sign Up'}
+          SignUp
         </button>
       </form>
       <p style={{ marginTop: '1rem', textAlign: 'center' }}>
