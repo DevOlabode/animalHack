@@ -1,13 +1,17 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import NotLoggedInHome from './views/NotLoggedInHome'
+
+import LoggedInHome from './views/LoggedInHome';
+import NotLoggedInHome from './views/NotLoggedInHome';
 import SignInView from './views/SignInView';
 import SignUpView from './views/SignUpView';
+
+import {isLoggedIn} from '../services/auth';
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={< NotLoggedInHome/>} />
+        <Route path="/" element= { isLoggedIn() ? < NotLoggedInHome/> : <LoggedInHome />} />
         <Route path="/signin" element={<SignInView />} />
         <Route path="/signup" element={<SignUpView />} />
       </Routes>
