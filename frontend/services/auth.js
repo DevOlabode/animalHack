@@ -17,4 +17,4 @@ export async function logout() {
     });
   
     localStorage.removeItem("token");
-  }
+}
