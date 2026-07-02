@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import AuthLayout from '../components/AuthLayout';
 import { useAuth } from '../context/AuthContext';
 import { parseAuthResponse } from '../../services/auth';
 
@@ -24,19 +25,18 @@ export default function ClinicSignUpView() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    setLoading(true);
 
     if (password !== confirmPassword) {
       setError('Passwords do not match');
-      setLoading(false);
       return;
     }
 
     if (password.length < 6) {
       setError('Password must be at least 6 characters');
-      setLoading(false);
       return;
     }
+
+    setLoading(true);
 
     try {
       const response = await fetch(`${API_BASE}/auth/signup/clinic`, {
@@ -67,157 +67,82 @@ export default function ClinicSignUpView() {
       setAuth(parseAuthResponse(data));
       navigate('/');
     } catch (err) {
-      if (err instanceof TypeError) {
-        setError('Could not connect to the server.');
-      } else {
-        setError(err.message);
-      }
+      setError(err instanceof TypeError ? 'Could not connect to the server.' : err.message);
     } finally {
       setLoading(false);
     }
   };
 
-  const fieldStyle = { width: '100%', padding: '0.5rem' };
-  const labelStyle = { display: 'block', marginBottom: '0.25rem' };
-  const groupStyle = { marginBottom: '1rem' };
-
   return (
-    <div style={{ maxWidth: 520, margin: '2rem auto', padding: '1rem' }}>
-      <h2>Register Your Clinic</h2>
-      <p style={{ color: '#666', marginBottom: '1.5rem' }}>
-        Create a clinic account to manage appointments and patient records.
-      </p>
-      {error && <div style={{ color: 'red', marginBottom: '1rem' }}>{error}</div>}
-      <form onSubmit={handleSubmit}>
-        <h3 style={{ marginBottom: '1rem' }}>Account Details</h3>
-        <div style={groupStyle}>
-          <label htmlFor="name" style={labelStyle}>Contact Name</label>
-          <input
-            id="name"
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-            style={fieldStyle}
-          />
+    <AuthLayout
+      wide
+      title="Register your clinic"
+      subtitle="Create a clinic account to manage appointments and patient records."
+    >
+      {error && <div className="alert alert-error">{error}</div>}
+      <form className="form-grid" onSubmit={handleSubmit}>
+        <h2 className="section-title">Account</h2>
+        <div className="form-grid form-grid-2">
+          <div className="form-group">
+            <label htmlFor="name">Contact name</label>
+            <input id="name" type="text" value={name} onChange={(e) => setName(e.target.value)} required />
+          </div>
+          <div className="form-group">
+            <label htmlFor="email">Login email</label>
+            <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          </div>
         </div>
-        <div style={groupStyle}>
-          <label htmlFor="email" style={labelStyle}>Login Email</label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            style={fieldStyle}
-          />
-        </div>
-        <div style={groupStyle}>
-          <label htmlFor="password" style={labelStyle}>Password</label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            minLength={6}
-            style={fieldStyle}
-          />
-        </div>
-        <div style={groupStyle}>
-          <label htmlFor="confirmPassword" style={labelStyle}>Confirm Password</label>
-          <input
-            id="confirmPassword"
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-            style={fieldStyle}
-          />
+        <div className="form-grid form-grid-2">
+          <div className="form-group">
+            <label htmlFor="password">Password</label>
+            <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
+          </div>
+          <div className="form-group">
+            <label htmlFor="confirmPassword">Confirm password</label>
+            <input id="confirmPassword" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
+          </div>
         </div>
 
-        <h3 style={{ margin: '1.5rem 0 1rem' }}>Clinic Profile</h3>
-        <div style={groupStyle}>
-          <label htmlFor="clinicName" style={labelStyle}>Clinic Name</label>
-          <input
-            id="clinicName"
-            type="text"
-            value={clinicName}
-            onChange={(e) => setClinicName(e.target.value)}
-            required
-            style={fieldStyle}
-          />
+        <h2 className="section-title">Clinic profile</h2>
+        <div className="form-group">
+          <label htmlFor="clinicName">Clinic name</label>
+          <input id="clinicName" type="text" value={clinicName} onChange={(e) => setClinicName(e.target.value)} required />
         </div>
-        <div style={groupStyle}>
-          <label htmlFor="description" style={labelStyle}>Description</label>
-          <textarea
-            id="description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            rows={3}
-            style={fieldStyle}
-          />
+        <div className="form-group">
+          <label htmlFor="description">Description</label>
+          <textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} />
         </div>
-        <div style={groupStyle}>
-          <label htmlFor="address" style={labelStyle}>Address</label>
-          <input
-            id="address"
-            type="text"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            required
-            style={fieldStyle}
-          />
+        <div className="form-grid form-grid-2">
+          <div className="form-group">
+            <label htmlFor="address">Address</label>
+            <input id="address" type="text" value={address} onChange={(e) => setAddress(e.target.value)} required />
+          </div>
+          <div className="form-group">
+            <label htmlFor="phone">Phone</label>
+            <input id="phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} required />
+          </div>
         </div>
-        <div style={groupStyle}>
-          <label htmlFor="phone" style={labelStyle}>Phone Number</label>
-          <input
-            id="phone"
-            type="tel"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            required
-            style={fieldStyle}
-          />
-        </div>
-        <div style={groupStyle}>
-          <label htmlFor="clinicEmail" style={labelStyle}>Clinic Email (optional)</label>
-          <input
-            id="clinicEmail"
-            type="email"
-            value={clinicEmail}
-            onChange={(e) => setClinicEmail(e.target.value)}
-            placeholder="Defaults to login email"
-            style={fieldStyle}
-          />
-        </div>
-        <div style={groupStyle}>
-          <label htmlFor="operatingHours" style={labelStyle}>Operating Hours</label>
-          <input
-            id="operatingHours"
-            type="text"
-            value={operatingHours}
-            onChange={(e) => setOperatingHours(e.target.value)}
-            placeholder="e.g. Mon-Fri 9:00 AM - 6:00 PM"
-            required
-            style={fieldStyle}
-          />
+        <div className="form-grid form-grid-2">
+          <div className="form-group">
+            <label htmlFor="clinicEmail">Public clinic email</label>
+            <input id="clinicEmail" type="email" value={clinicEmail} onChange={(e) => setClinicEmail(e.target.value)} placeholder="Defaults to login email" />
+          </div>
+          <div className="form-group">
+            <label htmlFor="operatingHours">Operating hours</label>
+            <input id="operatingHours" type="text" value={operatingHours} onChange={(e) => setOperatingHours(e.target.value)} placeholder="Mon–Fri 9:00 AM – 6:00 PM" required />
+          </div>
         </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          style={{ width: '100%', padding: '0.75rem', cursor: loading ? 'not-allowed' : 'pointer' }}
-        >
-          {loading ? 'Registering clinic...' : 'Register Clinic'}
+        <button type="submit" className="btn btn-primary btn-block" disabled={loading}>
+          {loading ? 'Registering clinic...' : 'Register clinic'}
         </button>
       </form>
-      <p style={{ marginTop: '1rem', textAlign: 'center' }}>
-        Already have an account? <Link to="/signin">Sign In</Link>
+      <p className="text-link-block">
+        Already have an account? <Link to="/signin">Sign in</Link>
       </p>
-      <p style={{ marginTop: '0.5rem', textAlign: 'center' }}>
+      <p className="text-link-block">
         Signing up as a pet owner? <Link to="/signup">Pet owner sign up</Link>
       </p>
-    </div>
+    </AuthLayout>
   );
 }

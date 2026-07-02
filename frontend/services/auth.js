@@ -37,4 +37,38 @@ export async function logout() {
   });
 }
 
+export async function updateOwnerProfile(payload) {
+  const response = await fetch(`${API_BASE}/profile`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    ...fetchOptions,
+    body: JSON.stringify(payload),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || 'Failed to update profile');
+  }
+
+  return parseAuthResponse(data);
+}
+
+export async function updateClinicProfile(payload) {
+  const response = await fetch(`${API_BASE}/profile/clinic`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    ...fetchOptions,
+    body: JSON.stringify(payload),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || 'Failed to update clinic profile');
+  }
+
+  return parseAuthResponse(data);
+}
+
 export { parseAuthResponse };

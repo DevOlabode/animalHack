@@ -2,27 +2,22 @@ import { Link } from 'react-router-dom';
 
 export default function NotLoggedInHome() {
   return (
-    <div style={{ maxWidth: 600, margin: '4rem auto', padding: '2rem', textAlign: 'center' }}>
-      <h1>PetCare Platform</h1>
-      <p style={{ fontSize: '1.2rem', color: '#666', marginBottom: '2rem' }}>
-        A shared digital healthcare platform for pets where pet owners and veterinary clinics
-        can manage medical records, book appointments, track diagnoses, prescribe treatments,
-        and monitor follow-up care from a single system.
-      </p>
-      <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-        <Link to="/signin">
-          <button style={{ padding: '0.75rem 2rem', fontSize: '1rem' }}>Sign In</button>
-        </Link>
-        <Link to="/signup">
-          <button style={{ padding: '0.75rem 2rem', fontSize: '1rem', background: '#007bff', color: 'white', border: 'none' }}>
-            Pet Owner Sign Up
-          </button>
-        </Link>
-        <Link to="/signup/clinic">
-          <button style={{ padding: '0.75rem 2rem', fontSize: '1rem', background: '#28a745', color: 'white', border: 'none' }}>
-            Clinic Sign Up
-          </button>
-        </Link>
+    <div className="page">
+      <div className="container hero">
+        <div className="brand-badge" style={{ margin: '0 auto 1rem' }}>
+          <span className="brand-mark">P</span>
+          PetCare Platform
+        </div>
+        <h1 className="page-title">Digital healthcare for every pet</h1>
+        <p className="page-subtitle" style={{ maxWidth: '640px', margin: '0 auto' }}>
+          A shared platform where pet owners and veterinary clinics manage medical records,
+          book appointments, and track treatment — all in one place.
+        </p>
+        <div className="hero-actions">
+          <Link to="/signin" className="btn btn-secondary">Sign in</Link>
+          <Link to="/signup" className="btn btn-primary">Pet owner sign up</Link>
+          <Link to="/signup/clinic" className="btn btn-primary">Clinic sign up</Link>
+        </div>
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import AuthLayout from '../components/AuthLayout';
 import { useAuth } from '../context/AuthContext';
 import { parseAuthResponse } from '../../services/auth';
 
@@ -18,19 +19,18 @@ export default function SignUpView() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    setLoading(true);
 
     if (password !== confirmPassword) {
       setError('Passwords do not match');
-      setLoading(false);
       return;
     }
 
     if (password.length < 6) {
       setError('Password must be at least 6 characters');
-      setLoading(false);
       return;
     }
+
+    setLoading(true);
 
     try {
       const response = await fetch(`${API_BASE}/auth/signup`, {
@@ -49,88 +49,42 @@ export default function SignUpView() {
       setAuth(parseAuthResponse(data));
       navigate('/');
     } catch (err) {
-      if (err instanceof TypeError) {
-        setError('Could not connect to the server.');
-      } else {
-        setError(err.message);
-      }
+      setError(err instanceof TypeError ? 'Could not connect to the server.' : err.message);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={{ maxWidth: 400, margin: '2rem auto', padding: '1rem' }}>
-      <h2>Pet Owner Sign Up</h2>
-      {error && <div style={{ color: 'red', marginBottom: '1rem' }}>{error}</div>}
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '1rem' }}>
-          <label htmlFor="name" style={{ display: 'block', marginBottom: '0.25rem' }}>
-            Name
-          </label>
-          <input
-            id="name"
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-            style={{ width: '100%', padding: '0.5rem' }}
-          />
+    <AuthLayout title="Create your account" subtitle="Sign up as a pet owner to manage your pets.">
+      {error && <div className="alert alert-error">{error}</div>}
+      <form className="form-grid" onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label htmlFor="name">Full name</label>
+          <input id="name" type="text" value={name} onChange={(e) => setName(e.target.value)} required />
         </div>
-        <div style={{ marginBottom: '1rem' }}>
-          <label htmlFor="email" style={{ display: 'block', marginBottom: '0.25rem' }}>
-            Email
-          </label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            style={{ width: '100%', padding: '0.5rem' }}
-          />
+        <div className="form-group">
+          <label htmlFor="email">Email</label>
+          <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
         </div>
-        <div style={{ marginBottom: '1rem' }}>
-          <label htmlFor="password" style={{ display: 'block', marginBottom: '0.25rem' }}>
-            Password
-          </label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            minLength={6}
-            style={{ width: '100%', padding: '0.5rem' }}
-          />
+        <div className="form-group">
+          <label htmlFor="password">Password</label>
+          <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
         </div>
-        <div style={{ marginBottom: '1rem' }}>
-          <label htmlFor="confirmPassword" style={{ display: 'block', marginBottom: '0.25rem' }}>
-            Confirm Password
-          </label>
-          <input
-            id="confirmPassword"
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-            style={{ width: '100%', padding: '0.5rem' }}
-          />
+        <div className="form-group">
+          <label htmlFor="confirmPassword">Confirm password</label>
+          <input id="confirmPassword" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
         </div>
-        <button
-          type="submit"
-          disabled={loading}
-          style={{ width: '100%', padding: '0.75rem', cursor: loading ? 'not-allowed' : 'pointer' }}
-        >
-          {loading ? 'Signing up...' : 'Sign Up'}
+        <button type="submit" className="btn btn-primary btn-block" disabled={loading}>
+          {loading ? 'Creating account...' : 'Create account'}
         </button>
       </form>
-      <p style={{ marginTop: '1rem', textAlign: 'center' }}>
-        Already have an account? <Link to="/signin">Sign In</Link>
+      <p className="text-link-block">
+        Already have an account? <Link to="/signin">Sign in</Link>
       </p>
-      <p style={{ marginTop: '0.5rem', textAlign: 'center' }}>
+      <p className="text-link-block">
         Registering a clinic? <Link to="/signup/clinic">Clinic sign up</Link>
       </p>
-    </div>
+    </AuthLayout>
   );
 }

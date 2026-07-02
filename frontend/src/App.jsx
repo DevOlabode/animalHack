@@ -6,13 +6,19 @@ import NotLoggedInHome from './views/NotLoggedInHome';
 import SignInView from './views/SignInView';
 import SignUpView from './views/SignUpView';
 import ClinicSignUpView from './views/ClinicSignUpView';
+import ProfileView from './views/ProfileView';
+import RequireAuth from './components/RequireAuth';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
 function HomeRoute() {
   const { user, loading } = useAuth();
 
   if (loading) {
-    return <div style={{ padding: '2rem', textAlign: 'center' }}>Loading...</div>;
+    return (
+      <div className="loading-screen">
+        <div className="spinner" aria-label="Loading" />
+      </div>
+    );
   }
 
   if (!user) {
@@ -35,6 +41,14 @@ function App() {
           <Route path="/signin" element={<SignInView />} />
           <Route path="/signup" element={<SignUpView />} />
           <Route path="/signup/clinic" element={<ClinicSignUpView />} />
+          <Route
+            path="/profile"
+            element={(
+              <RequireAuth>
+                <ProfileView />
+              </RequireAuth>
+            )}
+          />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
