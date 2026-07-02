@@ -13,7 +13,7 @@ app.use(cors({
     credentials:true
 }));
 
-require('../config/db')();
+require('../config/db.config')();
 
 app.use(express.json());
 
