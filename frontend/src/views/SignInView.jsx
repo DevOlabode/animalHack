@@ -35,12 +35,14 @@ export default function SignInView() {
       window.location.href = '/';
     } catch (err) {
       console.error("Fetch error:", err);
-    
+
       if (err instanceof TypeError) {
         setError("Could not connect to the server.");
       } else {
         setError(err.message);
       }
+    } finally {
+      setLoading(false);
     }
   };
 

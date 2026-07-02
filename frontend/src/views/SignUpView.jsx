@@ -18,15 +18,15 @@ export default function SignUpView() {
 
     if (password !== confirmPassword) {
       setError('Passwords do not match');
+      setLoading(false);
       return;
     }
 
     if (password.length < 6) {
       setError('Password must be at least 6 characters');
+      setLoading(false);
       return;
     }
-
-    setLoading(true);
 
     try {
       const response = await fetch(`${API_BASE}/auth/signup`, {
@@ -49,12 +49,14 @@ export default function SignUpView() {
       window.location.href = '/';
     } catch (err) {
       console.error("Fetch error:", err);
-    
+
       if (err instanceof TypeError) {
         setError("Could not connect to the server.");
       } else {
         setError(err.message);
       }
+    } finally {
+      setLoading(false);
     }
   };
 

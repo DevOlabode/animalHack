@@ -9,7 +9,7 @@ export function isLoggedIn() {
 export async function logout() {
     const token = localStorage.getItem("token");
   
-    await fetch(`${API_BASE}/auth/signup`, {
+    await fetch(`${API_BASE}/auth/logout`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,

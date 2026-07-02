@@ -14,7 +14,7 @@ const generateToken = (user) => {
 
 const signUp = async (req, res) => {
   try {
-    const { email, password, name, role } = req.body;
+    const { email, password, name, role } = req.body ?? {};
 
     if (!email || !password || !name) {
       return res.status(400).json({
@@ -50,7 +50,7 @@ const signUp = async (req, res) => {
 
 const signIn = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password } = req.body ?? {};
 
     if (!email || !password) {
       return res.status(400).json({
