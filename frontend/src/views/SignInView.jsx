@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import {Link} from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const API_BASE = '/api';
 
@@ -8,6 +9,8 @@ export default function SignInView() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const { setUser } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,26 +21,21 @@ export default function SignInView() {
       const response = await fetch(`${API_BASE}/auth/signin`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        credentials: 'include',
+        body: JSON.stringify({ email, password }),
       });
 
-      console.log(response.ok);
-
       const data = await response.json();
-      console.log(data);
 
       if (!response.ok) {
         throw new Error(data.message || 'Sign in failed');
       }
 
-      localStorage.setItem('token', data.data.token);
-      localStorage.setItem('user', JSON.stringify(data.data.user));
-      window.location.href = '/';
+      setUser(data.data.user);
+      navigate('/');
     } catch (err) {
-      console.error("Fetch error:", err);
-
       if (err instanceof TypeError) {
-        setError("Could not connect to the server.");
+        setError('Could not connect to the server.');
       } else {
         setError(err.message);
       }

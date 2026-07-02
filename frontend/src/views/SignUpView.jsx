@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const API_BASE = '/api';
 
@@ -10,6 +11,8 @@ export default function SignUpView() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const { setUser } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,26 +35,21 @@ export default function SignUpView() {
       const response = await fetch(`${API_BASE}/auth/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password })
+        credentials: 'include',
+        body: JSON.stringify({ name, email, password }),
       });
 
       const data = await response.json();
-      console.log(data);
 
       if (!response.ok) {
         throw new Error(data.message || 'Sign up failed');
       }
 
-      console.log(response.ok);
-
-      localStorage.setItem('token', data.data.token);
-      localStorage.setItem('user', JSON.stringify(data.data.user));
-      window.location.href = '/';
+      setUser(data.data.user);
+      navigate('/');
     } catch (err) {
-      console.error("Fetch error:", err);
-
       if (err instanceof TypeError) {
-        setError("Could not connect to the server.");
+        setError('Could not connect to the server.');
       } else {
         setError(err.message);
       }
@@ -120,9 +118,10 @@ export default function SignUpView() {
         </div>
         <button
           type="submit"
+          disabled={loading}
           style={{ width: '100%', padding: '0.75rem', cursor: loading ? 'not-allowed' : 'pointer' }}
         >
-          SignUp
+          {loading ? 'Signing up...' : 'Sign Up'}
         </button>
       </form>
       <p style={{ marginTop: '1rem', textAlign: 'center' }}>

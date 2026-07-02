@@ -4,19 +4,30 @@ import LoggedInHome from './views/LoggedInHome';
 import NotLoggedInHome from './views/NotLoggedInHome';
 import SignInView from './views/SignInView';
 import SignUpView from './views/SignUpView';
+import { AuthProvider, useAuth } from './context/AuthContext';
 
-import {isLoggedIn} from '../services/auth';
+function HomeRoute() {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return <div style={{ padding: '2rem', textAlign: 'center' }}>Loading...</div>;
+  }
+
+  return user ? <LoggedInHome /> : <NotLoggedInHome />;
+}
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element= { isLoggedIn() ? < LoggedInHome/> : <NotLoggedInHome />} />
-        <Route path="/signin" element={<SignInView />} />
-        <Route path="/signup" element={<SignUpView />} />
-      </Routes>
-    </BrowserRouter>
-  )
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<HomeRoute />} />
+          <Route path="/signin" element={<SignInView />} />
+          <Route path="/signup" element={<SignUpView />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
+  );
 }
 
-export default App
+export default App;

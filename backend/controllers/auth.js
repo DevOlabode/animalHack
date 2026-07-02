@@ -1,105 +1,99 @@
-const jwt = require('jsonwebtoken');
+const passport = require('../config/passport');
 const User = require('../models/User');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
-const JWT_EXPIRES_IN = '7d';
-
-const generateToken = (user) => {
-  return jwt.sign(
-    { id: user.id, email: user.email, role: user.role },
-    JWT_SECRET,
-    { expiresIn: JWT_EXPIRES_IN }
-  );
-};
-
-const signUp = async (req, res) => {
+const signUp = async (req, res, next) => {
   try {
     const { email, password, name, role } = req.body ?? {};
 
     if (!email || !password || !name) {
       return res.status(400).json({
         status: 'error',
-        message: 'Email, password, and name are required'
+        message: 'Email, password, and name are required',
       });
     }
 
     const user = await User.create({ email, password, name, role });
-    const token = generateToken(user);
-    const safeUser = User.toSafeUser(user);
 
-    res.status(201).json({
-      status: 'success',
-      message: 'User created successfully',
-      data: { user: safeUser, token }
+    req.login(user, (loginError) => {
+      if (loginError) {
+        return next(loginError);
+      }
+
+      res.status(201).json({
+        status: 'success',
+        message: 'User created successfully',
+        data: { user: User.toSafeUser(req.user) },
+      });
     });
   } catch (error) {
-    console.error('Signup error:', error);
-    console.error('Signup error stack:', error.stack);
     if (error.message === 'User already exists') {
       return res.status(409).json({
         status: 'error',
-        message: 'User with this email already exists'
+        message: 'User with this email already exists',
       });
     }
-    res.status(500).json({
-      status: 'error',
-      message: 'Internal server error'
-    });
+
+    next(error);
   }
 };
 
-const signIn = async (req, res) => {
-  try {
-    const { email, password } = req.body ?? {};
-
-    if (!email || !password) {
-      return res.status(400).json({
-        status: 'error',
-        message: 'Email and password are required'
-      });
+const signIn = (req, res, next) => {
+  passport.authenticate('local', (error, user, info) => {
+    if (error) {
+      return next(error);
     }
 
-    const user = await User.findByEmail(email);
     if (!user) {
       return res.status(401).json({
         status: 'error',
-        message: 'Invalid email or password'
+        message: info?.message || 'Invalid email or password',
       });
     }
 
-    const isValidPassword = await User.verifyPassword(user, password);
-    if (!isValidPassword) {
-      return res.status(401).json({
-        status: 'error',
-        message: 'Invalid email or password'
+    req.login(user, (loginError) => {
+      if (loginError) {
+        return next(loginError);
+      }
+
+      res.status(200).json({
+        status: 'success',
+        message: 'Signed in successfully',
+        data: { user: User.toSafeUser(req.user) },
       });
-    }
-
-    const token = generateToken(user);
-    const safeUser = User.toSafeUser(user);
-
-    res.status(200).json({
-      status: 'success',
-      message: 'Signed in successfully',
-      data: { user: safeUser, token }
     });
-  } catch (error) {
-    res.status(500).json({
-      status: 'error',
-      message: 'Internal server error'
-    });
-  }
+  })(req, res, next);
 };
 
-const logout = async (req, res) => {
+const logout = (req, res, next) => {
+  req.logout((logoutError) => {
+    if (logoutError) {
+      return next(logoutError);
+    }
+
+    req.session.destroy((destroyError) => {
+      if (destroyError) {
+        return next(destroyError);
+      }
+
+      res.clearCookie('connect.sid');
+      res.status(200).json({
+        status: 'success',
+        message: 'Logged out successfully',
+      });
+    });
+  });
+};
+
+const getCurrentUser = (req, res) => {
   res.status(200).json({
-    status: "success",
-    message: "Logged out successfully",
+    status: 'success',
+    data: { user: User.toSafeUser(req.user) },
   });
 };
 
 module.exports = {
   signUp,
   signIn,
-  logout
+  logout,
+  getCurrentUser,
 };

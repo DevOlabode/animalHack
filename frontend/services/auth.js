@@ -1,20 +1,31 @@
 const API_BASE = '/api';
 
-export function isLoggedIn() {
-    const token = localStorage.getItem("token");
-    console.log(token);
-    return !!token;
+const fetchOptions = {
+  credentials: 'include',
+};
+
+export async function getCurrentUser() {
+  try {
+    const response = await fetch(`${API_BASE}/auth/me`, fetchOptions);
+
+    if (response.status === 401) {
+      return null;
+    }
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const data = await response.json();
+    return data.data.user;
+  } catch {
+    return null;
+  }
 }
 
 export async function logout() {
-    const token = localStorage.getItem("token");
-  
-    await fetch(`${API_BASE}/auth/logout`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-  
-    localStorage.removeItem("token");
+  await fetch(`${API_BASE}/auth/logout`, {
+    method: 'POST',
+    ...fetchOptions,
+  });
 }
