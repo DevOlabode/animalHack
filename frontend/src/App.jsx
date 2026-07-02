@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
-import LoggedInHome from './views/LoggedInHome';
+import OwnerLoggedInView from './views/OwnerLoggedInView';
 import NotLoggedInHome from './views/NotLoggedInHome';
 import SignInView from './views/SignInView';
 import SignUpView from './views/SignUpView';
@@ -13,7 +13,7 @@ function HomeRoute() {
     return <div style={{ padding: '2rem', textAlign: 'center' }}>Loading...</div>;
   }
 
-  return user ? <LoggedInHome /> : <NotLoggedInHome />;
+  return user ? <OwnerLoggedInView /> : <NotLoggedInHome />;
 }
 
 function App() {

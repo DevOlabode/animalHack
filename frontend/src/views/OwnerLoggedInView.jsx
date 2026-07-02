@@ -1,7 +1,7 @@
 import Navbar from '../components/NavBar';
 import { useAuth } from '../context/AuthContext';
 
-function LoggedInHome() {
+function OwnerLoggedInView() {
   const { user } = useAuth();
 
   return (
@@ -13,4 +13,4 @@ function LoggedInHome() {
   );
 }
 
-export default LoggedInHome;
+export default OwnerLoggedInView;
