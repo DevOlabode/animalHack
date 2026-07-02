@@ -59,6 +59,9 @@ export default function SignInView() {
         </button>
       </form>
       <p className="text-link-block">
+        <Link to="/forgot-password">Forgot password?</Link>
+      </p>
+      <p className="text-link-block">
         New here? <Link to="/signup">Pet owner sign up</Link> or <Link to="/signup/clinic">Clinic sign up</Link>
       </p>
     </AuthLayout>

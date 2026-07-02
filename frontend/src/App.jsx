@@ -6,8 +6,14 @@ import NotLoggedInHome from './views/NotLoggedInHome';
 import SignInView from './views/SignInView';
 import SignUpView from './views/SignUpView';
 import ClinicSignUpView from './views/ClinicSignUpView';
+import ForgotPasswordView from './views/ForgotPasswordView';
+import ResetPasswordView from './views/ResetPasswordView';
 import ProfileView from './views/ProfileView';
+import PetsListView from './views/PetsListView';
+import PetDetailView from './views/PetDetailView';
+import PetFormView from './views/PetFormView';
 import RequireAuth from './components/RequireAuth';
+import RequirePetOwner from './components/RequirePetOwner';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
 function HomeRoute() {
@@ -41,12 +47,46 @@ function App() {
           <Route path="/signin" element={<SignInView />} />
           <Route path="/signup" element={<SignUpView />} />
           <Route path="/signup/clinic" element={<ClinicSignUpView />} />
+          <Route path="/forgot-password" element={<ForgotPasswordView />} />
+          <Route path="/reset-password" element={<ResetPasswordView />} />
           <Route
             path="/profile"
             element={(
               <RequireAuth>
                 <ProfileView />
               </RequireAuth>
+            )}
+          />
+          <Route
+            path="/pets"
+            element={(
+              <RequirePetOwner>
+                <PetsListView />
+              </RequirePetOwner>
+            )}
+          />
+          <Route
+            path="/pets/new"
+            element={(
+              <RequirePetOwner>
+                <PetFormView />
+              </RequirePetOwner>
+            )}
+          />
+          <Route
+            path="/pets/:id"
+            element={(
+              <RequirePetOwner>
+                <PetDetailView />
+              </RequirePetOwner>
+            )}
+          />
+          <Route
+            path="/pets/:id/edit"
+            element={(
+              <RequirePetOwner>
+                <PetFormView />
+              </RequirePetOwner>
             )}
           />
         </Routes>

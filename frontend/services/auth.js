@@ -71,4 +71,36 @@ export async function updateClinicProfile(payload) {
   return parseAuthResponse(data);
 }
 
+export async function forgotPassword(email) {
+  const response = await fetch(`${API_BASE}/auth/forgot-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || 'Failed to send reset link');
+  }
+
+  return data.message;
+}
+
+export async function resetPassword(token, password) {
+  const response = await fetch(`${API_BASE}/auth/reset-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token, password }),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || 'Failed to reset password');
+  }
+
+  return data.message;
+}
+
 export { parseAuthResponse };

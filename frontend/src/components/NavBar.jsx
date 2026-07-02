@@ -4,7 +4,8 @@ import { useAuth } from '../context/AuthContext';
 
 export default function NavBar() {
   const navigate = useNavigate();
-  const { clearAuth } = useAuth();
+  const { user, clearAuth } = useAuth();
+  const isPetOwner = user?.role === 'pet_owner' || user?.role === 'owner';
 
   async function handleLogout() {
     await logout();
@@ -24,6 +25,11 @@ export default function NavBar() {
           <NavLink to="/" className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} end>
             Dashboard
           </NavLink>
+          {isPetOwner && (
+            <NavLink to="/pets" className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>
+              Pets
+            </NavLink>
+          )}
           <NavLink to="/profile" className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>
             Profile
           </NavLink>

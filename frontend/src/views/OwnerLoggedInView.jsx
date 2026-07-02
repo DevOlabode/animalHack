@@ -1,9 +1,18 @@
-import AppShell from '../components/AppShell';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import AppShell from '../components/AppShell';
 import { useAuth } from '../context/AuthContext';
+import { fetchPets } from '../../services/pets';
 
 function OwnerLoggedInView() {
   const { user } = useAuth();
+  const [petCount, setPetCount] = useState(null);
+
+  useEffect(() => {
+    fetchPets()
+      .then((pets) => setPetCount(pets.length))
+      .catch(() => setPetCount(0));
+  }, []);
 
   return (
     <AppShell>
@@ -12,7 +21,10 @@ function OwnerLoggedInView() {
           <h1 className="page-title">Welcome back, {user?.name}</h1>
           <p className="page-subtitle">Manage your pets, appointments, and medical records.</p>
         </div>
-        <Link to="/profile" className="btn btn-primary">Edit profile</Link>
+        <div className="btn-group">
+          <Link to="/pets/new" className="btn btn-primary">Add pet</Link>
+          <Link to="/profile" className="btn btn-secondary">Edit profile</Link>
+        </div>
       </div>
 
       <div className="dashboard-grid">
@@ -22,20 +34,21 @@ function OwnerLoggedInView() {
             <div className="stat-value">{user?.email}</div>
           </div>
           <div className="stat-card">
-            <div className="stat-label">Role</div>
-            <div className="stat-value">Pet owner</div>
+            <div className="stat-label">Pets registered</div>
+            <div className="stat-value">{petCount === null ? '...' : petCount}</div>
           </div>
           <div className="stat-card">
-            <div className="stat-label">Pets</div>
+            <div className="stat-label">Appointments</div>
             <div className="stat-value">Coming soon</div>
           </div>
         </div>
 
         <div className="card">
-          <h2 className="section-title">Your dashboard</h2>
-          <p className="text-muted">
-            Add pets, book appointments, and view medical timelines from here as those features roll out.
-          </p>
+          <h2 className="section-title">Quick actions</h2>
+          <div className="btn-group">
+            <Link to="/pets" className="btn btn-primary">View my pets</Link>
+            <Link to="/pets/new" className="btn btn-secondary">Add a new pet</Link>
+          </div>
         </div>
       </div>
     </AppShell>
