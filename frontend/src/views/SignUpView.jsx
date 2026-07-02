@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { parseAuthResponse } from '../../services/auth';
 
 const API_BASE = '/api';
 
@@ -11,7 +12,7 @@ export default function SignUpView() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { setUser } = useAuth();
+  const { setAuth } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -45,7 +46,7 @@ export default function SignUpView() {
         throw new Error(data.message || 'Sign up failed');
       }
 
-      setUser(data.data.user);
+      setAuth(parseAuthResponse(data));
       navigate('/');
     } catch (err) {
       if (err instanceof TypeError) {
@@ -60,7 +61,7 @@ export default function SignUpView() {
 
   return (
     <div style={{ maxWidth: 400, margin: '2rem auto', padding: '1rem' }}>
-      <h2>Sign Up</h2>
+      <h2>Pet Owner Sign Up</h2>
       {error && <div style={{ color: 'red', marginBottom: '1rem' }}>{error}</div>}
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: '1rem' }}>
@@ -126,6 +127,9 @@ export default function SignUpView() {
       </form>
       <p style={{ marginTop: '1rem', textAlign: 'center' }}>
         Already have an account? <Link to="/signin">Sign In</Link>
+      </p>
+      <p style={{ marginTop: '0.5rem', textAlign: 'center' }}>
+        Registering a clinic? <Link to="/signup/clinic">Clinic sign up</Link>
       </p>
     </div>
   );

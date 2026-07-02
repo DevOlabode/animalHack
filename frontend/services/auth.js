@@ -4,22 +4,29 @@ const fetchOptions = {
   credentials: 'include',
 };
 
+function parseAuthResponse(data) {
+  return {
+    user: data.data.user,
+    clinic: data.data.clinic ?? null,
+  };
+}
+
 export async function getCurrentUser() {
   try {
     const response = await fetch(`${API_BASE}/auth/me`, fetchOptions);
 
     if (response.status === 401) {
-      return null;
+      return { user: null, clinic: null };
     }
 
     if (!response.ok) {
-      return null;
+      return { user: null, clinic: null };
     }
 
     const data = await response.json();
-    return data.data.user;
+    return parseAuthResponse(data);
   } catch {
-    return null;
+    return { user: null, clinic: null };
   }
 }
 
@@ -29,3 +36,5 @@ export async function logout() {
     ...fetchOptions,
   });
 }
+
+export { parseAuthResponse };

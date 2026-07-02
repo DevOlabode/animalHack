@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { parseAuthResponse } from '../../services/auth';
 
 const API_BASE = '/api';
 
@@ -9,7 +10,7 @@ export default function SignInView() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { setUser } = useAuth();
+  const { setAuth } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -31,7 +32,7 @@ export default function SignInView() {
         throw new Error(data.message || 'Sign in failed');
       }
 
-      setUser(data.data.user);
+      setAuth(parseAuthResponse(data));
       navigate('/');
     } catch (err) {
       if (err instanceof TypeError) {
@@ -84,7 +85,8 @@ export default function SignInView() {
         </button>
       </form>
       <p style={{ marginTop: '1rem', textAlign: 'center' }}>
-        Don't have an account? <Link to="/signup">Sign Up</Link>
+        Don't have an account? <Link to="/signup">Pet owner sign up</Link> or{' '}
+        <Link to="/signup/clinic">Clinic sign up</Link>
       </p>
     </div>
   );

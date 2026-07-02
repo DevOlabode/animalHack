@@ -4,11 +4,11 @@ import { useAuth } from '../context/AuthContext';
 
 export default function Navbar() {
   const navigate = useNavigate();
-  const { setUser } = useAuth();
+  const { clearAuth } = useAuth();
 
   async function handleLogout() {
     await logout();
-    setUser(null);
+    clearAuth();
     navigate('/signin');
   }
 
