@@ -1,6 +1,7 @@
 const crypto = require('crypto');
 const User = require('../models/User');
 const PasswordReset = require('../models/PasswordReset');
+const { sendPasswordResetEmail, isEmailConfigured } = require('../services/email');
 
 const RESET_TOKEN_EXPIRY_MS = 60 * 60 * 1000;
 
@@ -31,8 +32,18 @@ const forgotPassword = async (req, res) => {
 
     const resetUrl = `${process.env.FRONTEND_ORIGIN}/reset-password?token=${token}`;
 
-    if (process.env.NODE_ENV !== 'production') {
-      console.log(`[PASSWORD RESET] Reset link for ${user.email}: ${resetUrl}`);
+    try {
+      await sendPasswordResetEmail({
+        to: user.email,
+        name: user.name,
+        resetUrl,
+      });
+    } catch (error) {
+      console.error('[PASSWORD RESET] Failed to send email:', error.message);
+
+      if (!isEmailConfigured()) {
+        console.log(`[PASSWORD RESET] Reset link for ${user.email}: ${resetUrl}`);
+      }
     }
   }
 
