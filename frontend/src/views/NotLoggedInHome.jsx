@@ -15,9 +15,13 @@ export default function NotLoggedInHome() {
         </p>
         <div className="hero-actions">
           <Link to="/signin" className="btn btn-secondary">Sign in</Link>
+          <Link to="/clinics" className="btn btn-secondary">Browse clinics</Link>
           <Link to="/signup" className="btn btn-primary">Pet owner sign up</Link>
           <Link to="/signup/clinic" className="btn btn-primary">Clinic sign up</Link>
         </div>
+        <p style={{ marginTop: '2rem' }}>
+          <Link to="/about" className="nav-link">Learn more about PetCare</Link>
+        </p>
       </div>
     </div>
   );

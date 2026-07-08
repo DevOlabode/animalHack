@@ -1,4 +1,6 @@
 const Pet = require('../models/Pet');
+const Clinic = require('../models/Clinic');
+const Appointment = require('../models/Appointment');
 
 const MAX_PHOTO_LENGTH = 2_000_000;
 
@@ -54,9 +56,26 @@ const listPets = async (req, res, next) => {
 
 const getPet = async (req, res, next) => {
   try {
-    const pet = await Pet.findOne({ _id: req.params.id, ownerId: req.user._id });
+    const pet = await Pet.findById(req.params.id);
 
     if (!pet) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Pet not found',
+      });
+    }
+
+    const isOwner = pet.ownerId.toString() === req.user._id.toString();
+    let isClinicPatient = false;
+
+    if (req.user.role === 'vet') {
+      const clinic = await Clinic.findOne({ userId: req.user._id });
+      if (clinic) {
+        isClinicPatient = await Appointment.exists({ petId: pet._id, clinicId: clinic._id });
+      }
+    }
+
+    if (!isOwner && !isClinicPatient) {
       return res.status(404).json({
         status: 'error',
         message: 'Pet not found',

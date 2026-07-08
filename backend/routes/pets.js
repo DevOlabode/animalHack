@@ -5,11 +5,14 @@ const { isPetOwner } = require('../middleware/roles');
 
 const router = express.Router();
 
-router.use(isAuthenticated, isPetOwner);
+router.use(isAuthenticated);
+
+router.get('/:id', getPet);
+
+router.use(isPetOwner);
 
 router.get('/', listPets);
 router.post('/', createPet);
-router.get('/:id', getPet);
 router.put('/:id', updatePet);
 router.delete('/:id', deletePet);
 
