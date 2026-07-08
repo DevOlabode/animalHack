@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import AppShell from '../components/AppShell';
+import PageHeader from '../components/PageHeader';
+import StatCard from '../components/StatCard';
+import { IconCalendar, IconClipboard, IconUsers } from '../components/icons';
 import { useAuth } from '../context/AuthContext';
 import { fetchClinicAppointments, fetchPatients } from '../../services/api';
 
 function ClinicLoggedInView() {
-  const { user, clinic } = useAuth();
+  const { clinic } = useAuth();
   const [appointments, setAppointments] = useState([]);
   const [patients, setPatients] = useState([]);
 
@@ -28,30 +31,22 @@ function ClinicLoggedInView() {
 
   return (
     <AppShell>
-      <div className="dashboard-header">
-        <div>
-          <h1 className="page-title">{clinic?.name ?? 'Clinic Dashboard'}</h1>
-          <p className="page-subtitle">Manage appointments, patients, and clinic information.</p>
-        </div>
-        <div className="btn-group">
-          <Link to="/clinic/appointments" className="btn btn-primary">Manage appointments</Link>
-          <Link to="/profile" className="btn btn-secondary">Edit profile</Link>
-        </div>
-      </div>
+      <PageHeader
+        eyebrow="Clinic dashboard"
+        title={clinic?.name ?? 'Clinic Dashboard'}
+        subtitle="Today's schedule, pending requests, and recent patients."
+        actions={(
+          <>
+            <Link to="/clinic/appointments" className="btn btn-primary">Manage appointments</Link>
+            <Link to="/profile" className="btn btn-secondary">Edit profile</Link>
+          </>
+        )}
+      />
 
-      <div className="stat-grid" style={{ marginBottom: '1.5rem' }}>
-        <div className="stat-card">
-          <div className="stat-label">Today&apos;s appointments</div>
-          <div className="stat-value">{todayAppts.length}</div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-label">Pending requests</div>
-          <div className="stat-value">{pending.length}</div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-label">Recent patients</div>
-          <div className="stat-value">{patients.length}</div>
-        </div>
+      <div className="stat-grid" style={{ marginBottom: '1.75rem' }}>
+        <StatCard icon={IconCalendar} label="Today's appointments" value={todayAppts.length} accent="teal" />
+        <StatCard icon={IconClipboard} label="Pending requests" value={pending.length} accent="amber" />
+        <StatCard icon={IconUsers} label="Recent patients" value={patients.length} accent="indigo" />
       </div>
 
       <div className="dashboard-grid">

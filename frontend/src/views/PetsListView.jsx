@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import AppShell from '../components/AppShell';
+import PageHeader from '../components/PageHeader';
+import EmptyState from '../components/EmptyState';
+import { IconPaw } from '../components/icons';
 import { fetchPets } from '../../services/pets';
 
 export default function PetsListView() {
@@ -17,13 +20,12 @@ export default function PetsListView() {
 
   return (
     <AppShell>
-      <div className="dashboard-header">
-        <div>
-          <h1 className="page-title">My pets</h1>
-          <p className="page-subtitle">Manage profiles for all of your pets.</p>
-        </div>
-        <Link to="/pets/new" className="btn btn-primary">Add pet</Link>
-      </div>
+      <PageHeader
+        eyebrow="Your pets"
+        title="My pets"
+        subtitle="Profiles, medical history, and documents for each of your pets."
+        actions={<Link to="/pets/new" className="btn btn-primary">Add pet</Link>}
+      />
 
       {error && <div className="alert alert-error">{error}</div>}
 
@@ -32,12 +34,13 @@ export default function PetsListView() {
           <div className="spinner" aria-label="Loading" />
         </div>
       ) : pets.length === 0 ? (
-        <div className="card empty-state">
-          <h2 className="section-title">No pets yet</h2>
-          <p className="text-muted">Add your first pet to start building their medical profile.</p>
-          <Link to="/pets/new" className="btn btn-primary" style={{ marginTop: '1rem' }}>
-            Add your first pet
-          </Link>
+        <div className="card">
+          <EmptyState
+            icon={IconPaw}
+            title="No pets yet"
+            description="Add your first pet to start building their medical profile and book appointments."
+            action={<Link to="/pets/new" className="btn btn-primary">Add your first pet</Link>}
+          />
         </div>
       ) : (
         <div className="pet-grid">

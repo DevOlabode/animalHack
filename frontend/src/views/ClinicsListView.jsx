@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom';
 import AppShell from '../components/AppShell';
+import PageHeader from '../components/PageHeader';
 import { useEffect, useState } from 'react';
 import { fetchClinics } from '../../services/api';
+import { IconUsers } from '../components/icons';
 
 export default function ClinicsListView() {
   const [clinics, setClinics] = useState([]);
@@ -14,23 +16,28 @@ export default function ClinicsListView() {
 
   return (
     <AppShell>
-      <div className="dashboard-header">
-        <div>
-          <h1 className="page-title">Browse clinics</h1>
-          <p className="page-subtitle">Find a veterinary clinic and book an appointment.</p>
-        </div>
-      </div>
+      <PageHeader
+        eyebrow="Find care"
+        title="Browse clinics"
+        subtitle="Discover veterinary clinics and book an appointment for your pet."
+      />
+
       {error && <div className="alert alert-error">{error}</div>}
+
       {loading ? (
-        <div className="loading-screen" style={{ minHeight: '30vh' }}><div className="spinner" /></div>
+        <div className="loading-screen" style={{ minHeight: '30vh' }}><div className="spinner" aria-label="Loading" /></div>
       ) : (
         <div className="pet-grid">
           {clinics.map((c) => (
             <Link key={c._id} to={`/clinics/${c._id}`} className="pet-card">
+              <div className="clinic-card-icon">
+                <IconUsers />
+              </div>
               <div className="pet-card-body">
                 <h3>{c.name}</h3>
                 <p className="text-muted">{c.address}</p>
-                <p className="pet-card-meta">{c.phone} · {c.operatingHours}</p>
+                <p className="pet-card-meta">{c.phone}</p>
+                <p className="text-muted" style={{ marginTop: '0.35rem', fontSize: '0.88rem' }}>{c.operatingHours}</p>
               </div>
             </Link>
           ))}

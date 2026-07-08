@@ -5,7 +5,7 @@ export default function AppShell({ children }) {
     <div className="app-shell">
       <NavBar />
       <main className="app-main">
-        <div className="container">{children}</div>
+        <div className="container page-enter">{children}</div>
       </main>
     </div>
   );

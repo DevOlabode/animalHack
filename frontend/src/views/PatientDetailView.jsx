@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import AppShell from '../components/AppShell';
+import PageHeader from '../components/PageHeader';
+import Tabs from '../components/Tabs';
 import { fetchPet } from '../../services/pets';
 import {
   fetchTimeline, fetchPrescriptions, createDiagnosis, createPrescription, createReminder,
@@ -68,23 +70,25 @@ export default function PatientDetailView() {
 
   if (!pet) return <AppShell><div className="loading-screen" style={{ minHeight: '40vh' }}><div className="spinner" /></div></AppShell>;
 
+  const vetTabs = [
+    { id: 'timeline', label: 'Timeline' },
+    { id: 'diagnosis', label: 'Diagnosis' },
+    { id: 'prescription', label: 'Prescription' },
+    { id: 'reminder', label: 'Reminder' },
+  ];
+
   return (
     <AppShell>
-      <div className="dashboard-header">
-        <div>
-          <h1 className="page-title">{pet.name}</h1>
-          <p className="page-subtitle">{pet.species} · {pet.breed} · {pet.age}</p>
-        </div>
-        <Link to="/patients" className="btn btn-secondary">Back</Link>
-      </div>
+      <PageHeader
+        eyebrow="Patient record"
+        title={pet.name}
+        subtitle={`${pet.species} · ${pet.breed} · ${pet.age}`}
+        actions={<Link to="/patients" className="btn btn-secondary">Back to patients</Link>}
+      />
       {error && <div className="alert alert-error">{error}</div>}
       {success && <div className="alert alert-success">{success}</div>}
 
-      <div className="btn-group" style={{ marginBottom: '1.5rem' }}>
-        {['timeline', 'diagnosis', 'prescription', 'reminder'].map((t) => (
-          <button key={t} type="button" className={`btn ${tab === t ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setTab(t)}>{t}</button>
-        ))}
-      </div>
+      <Tabs tabs={vetTabs} active={tab} onChange={setTab} />
 
       {tab === 'timeline' && (
         <div className="card">

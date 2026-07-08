@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import AppShell from '../components/AppShell';
+import PageHeader from '../components/PageHeader';
+import Tabs from '../components/Tabs';
 import { deletePet, fetchPet } from '../../services/pets';
 import { fetchTimeline, fetchPrescriptions, fetchDocuments, uploadDocument } from '../../services/api';
 
@@ -113,29 +115,31 @@ export default function PetDetailView() {
   const activeRx = prescriptions.filter((p) => p.isActive);
   const pastRx = prescriptions.filter((p) => !p.isActive);
 
+  const petTabs = [
+    { id: 'profile', label: 'Profile' },
+    { id: 'timeline', label: 'Timeline' },
+    { id: 'prescriptions', label: 'Prescriptions' },
+    { id: 'documents', label: 'Documents' },
+  ];
+
   return (
     <AppShell>
-      <div className="dashboard-header">
-        <div>
-          <h1 className="page-title">{pet.name}</h1>
-          <p className="page-subtitle">{pet.species} · {pet.breed}</p>
-        </div>
-        <div className="btn-group">
-          <Link to={`/pets/${id}/edit`} className="btn btn-primary">Edit</Link>
-          <Link to="/pets" className="btn btn-secondary">Back</Link>
-        </div>
-      </div>
+      <PageHeader
+        eyebrow="Pet profile"
+        title={pet.name}
+        subtitle={`${pet.species} · ${pet.breed} · ${pet.age}`}
+        actions={(
+          <>
+            <Link to={`/pets/${id}/edit`} className="btn btn-primary">Edit</Link>
+            <Link to="/pets" className="btn btn-secondary">Back</Link>
+          </>
+        )}
+      />
 
       {error && <div className="alert alert-error">{error}</div>}
       {success && <div className="alert alert-success">{success}</div>}
 
-      <div className="btn-group" style={{ marginBottom: '1.5rem' }}>
-        {['profile', 'timeline', 'prescriptions', 'documents'].map((t) => (
-          <button key={t} type="button" className={`btn ${tab === t ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setTab(t)}>
-            {t.charAt(0).toUpperCase() + t.slice(1)}
-          </button>
-        ))}
-      </div>
+      <Tabs tabs={petTabs} active={tab} onChange={setTab} />
 
       {tab === 'profile' && (
         <>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import AppShell from '../components/AppShell';
+import PageHeader from '../components/PageHeader';
 import { useAuth } from '../context/AuthContext';
 import { fetchClinic, fetchClinicSlots, bookAppointment } from '../../services/api';
 import { fetchPets } from '../../services/pets';
@@ -46,13 +47,12 @@ export default function ClinicDetailView() {
 
   return (
     <AppShell>
-      <div className="dashboard-header">
-        <div>
-          <h1 className="page-title">{clinic?.name}</h1>
-          <p className="page-subtitle">{clinic?.description}</p>
-        </div>
-        <Link to="/clinics" className="btn btn-secondary">Back</Link>
-      </div>
+      <PageHeader
+        eyebrow="Clinic profile"
+        title={clinic?.name}
+        subtitle={clinic?.description}
+        actions={<Link to="/clinics" className="btn btn-secondary">Back to clinics</Link>}
+      />
 
       <div className="card card-xl" style={{ marginBottom: '1.5rem' }}>
         <div className="profile-preview">

@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import AppShell from '../components/AppShell';
+import PageHeader from '../components/PageHeader';
+import StatCard from '../components/StatCard';
+import { IconBell, IconCalendar, IconPaw } from '../components/icons';
 import { useAuth } from '../context/AuthContext';
 import { fetchPets } from '../../services/pets';
 import { fetchOwnerAppointments, fetchReminders, fetchTasks, fetchTimeline } from '../../services/api';
@@ -42,33 +45,26 @@ function OwnerLoggedInView() {
   const upcoming = appointments.filter((a) => ['pending', 'confirmed'].includes(a.status)).slice(0, 3);
   const activeTasks = tasks.filter((t) => t.status !== 'completed').slice(0, 3);
   const activeReminders = reminders.slice(0, 3);
+  const firstName = user?.name?.split(' ')[0] ?? 'there';
 
   return (
     <AppShell>
-      <div className="dashboard-header">
-        <div>
-          <h1 className="page-title">Welcome back, {user?.name}</h1>
-          <p className="page-subtitle">Manage your pets, appointments, and medical records.</p>
-        </div>
-        <div className="btn-group">
-          <Link to="/clinics" className="btn btn-primary">Book appointment</Link>
-          <Link to="/pets/new" className="btn btn-secondary">Add pet</Link>
-        </div>
-      </div>
+      <PageHeader
+        eyebrow="Dashboard"
+        title={`Welcome back, ${firstName}`}
+        subtitle="Your pets, appointments, and care tasks in one place."
+        actions={(
+          <>
+            <Link to="/clinics" className="btn btn-primary">Book appointment</Link>
+            <Link to="/pets/new" className="btn btn-secondary">Add pet</Link>
+          </>
+        )}
+      />
 
-      <div className="stat-grid" style={{ marginBottom: '1.5rem' }}>
-        <div className="stat-card">
-          <div className="stat-label">Pets registered</div>
-          <div className="stat-value">{petCount === null ? '…' : petCount}</div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-label">Upcoming appointments</div>
-          <div className="stat-value">{upcoming.length}</div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-label">Active care tasks</div>
-          <div className="stat-value">{activeTasks.length}</div>
-        </div>
+      <div className="stat-grid" style={{ marginBottom: '1.75rem' }}>
+        <StatCard icon={IconPaw} label="Pets registered" value={petCount === null ? '…' : petCount} accent="teal" />
+        <StatCard icon={IconCalendar} label="Upcoming appointments" value={upcoming.length} accent="amber" />
+        <StatCard icon={IconBell} label="Active care tasks" value={activeTasks.length} accent="indigo" />
       </div>
 
       <div className="dashboard-grid">
