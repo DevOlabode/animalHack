@@ -1,36 +1,36 @@
-const { Resend } = require('resend');
+const { BrevoClient } = require('@getbrevo/brevo');
 
-const resendApiKey = process.env.RESEND_API_KEY;
-const emailFrom = process.env.EMAIL_FROM || 'onboarding@resend.dev';
+const brevoApiKey = process.env.BREVO_API_KEY;
+const emailFrom = process.env.EMAIL_FROM;
+const emailFromName = process.env.EMAIL_FROM_NAME || 'PetCare';
 
-let resendClient = null;
+let brevoClient = null;
 
-if (resendApiKey) {
-  resendClient = new Resend(resendApiKey);
+if (brevoApiKey && emailFrom) {
+  brevoClient = new BrevoClient({ apiKey: brevoApiKey });
 }
 
-const isEmailConfigured = () => Boolean(resendClient);
+const isEmailConfigured = () => Boolean(brevoClient);
 
 const sendEmail = async ({ to, subject, html, text }) => {
-  if (!resendClient) {
-    console.warn('[EMAIL] RESEND_API_KEY not set — email not sent.');
+  if (!brevoClient) {
+    console.warn('[EMAIL] BREVO_API_KEY or EMAIL_FROM not set — email not sent.');
     console.warn(`[EMAIL] Would send to ${to}: ${subject}`);
     return { id: null, skipped: true };
   }
 
-  const { data, error } = await resendClient.emails.send({
-    from: emailFrom,
-    to,
+  const result = await brevoClient.transactionalEmails.sendTransacEmail({
     subject,
-    html,
-    text,
+    htmlContent: html,
+    textContent: text,
+    sender: {
+      name: emailFromName,
+      email: emailFrom,
+    },
+    to: [{ email: to }],
   });
 
-  if (error) {
-    throw new Error(error.message || 'Failed to send email');
-  }
-
-  return data;
+  return result;
 };
 
 const sendPasswordResetEmail = async ({ to, name, resetUrl }) => {
