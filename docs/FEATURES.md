@@ -1,4 +1,4 @@
-PetTimeline MVP Features (AnimalHack 2026)
+# Vethra MVP Features (AnimalHack 2026)
 
 ## Overview
 

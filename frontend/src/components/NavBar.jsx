@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { logout } from '../../services/auth';
 import { useAuth } from '../context/AuthContext';
+import BrandLogo from './BrandLogo';
 import { IconMenu, IconClose } from './icons';
 
 function NavLinks({ user, isOwner, isVet, onNavigate, mobile = false }) {
@@ -59,8 +60,7 @@ export default function NavBar() {
     <header className="nav">
       <div className="container nav-inner">
         <Link to="/" className="nav-brand" onClick={closeMenu}>
-          <span className="brand-mark">P</span>
-          PetCare
+          <BrandLogo />
         </Link>
 
         <nav className="nav-links nav-links-desktop" aria-label="Main">

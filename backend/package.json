@@ -1,7 +1,7 @@
 {
-  "name": "backend",
+  "name": "vethra-backend",
   "version": "1.0.0",
-  "description": "A shared digital healthcare platform for pets where pet owners and veterinary clinics can manage medical records, book appointments, track diagnoses, prescribe treatments, and monitor follow-up care from a single system.",
+  "description": "Vethra — a shared digital healthcare platform for pets where pet owners and veterinary clinics manage medical records, book appointments, track diagnoses, prescribe treatments, and monitor follow-up care.",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",

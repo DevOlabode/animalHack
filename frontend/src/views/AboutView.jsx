@@ -9,13 +9,13 @@ export default function AboutView() {
         <PageHeader
           eyebrow="About"
           title="Healthcare that travels with your pet"
-          subtitle="PetCare connects pet owners and veterinary clinics through one shared platform."
+          subtitle="Vethra connects pet owners and veterinary clinics through one shared platform."
         />
         <div className="about-grid">
           <div className="card">
             <h2 className="section-title">Our mission</h2>
             <p>
-              PetCare replaces scattered paperwork with a centralized medical timeline that both
+              Vethra replaces scattered paperwork with a centralized medical timeline that both
               owners and authorized veterinarians can access — making every visit smoother and safer.
             </p>
           </div>

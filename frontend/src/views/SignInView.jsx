@@ -43,7 +43,7 @@ export default function SignInView() {
   };
 
   return (
-    <AuthLayout title="Welcome back" subtitle="Sign in to your PetCare account.">
+    <AuthLayout title="Welcome back" subtitle="Sign in to your Vethra account.">
       {error && <div className="alert alert-error">{error}</div>}
       <form className="form-grid" onSubmit={handleSubmit}>
         <div className="form-group">

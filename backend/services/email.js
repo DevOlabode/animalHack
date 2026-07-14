@@ -2,7 +2,7 @@ const { BrevoClient } = require('@getbrevo/brevo');
 
 const brevoApiKey = process.env.BREVO_API_KEY;
 const emailFrom = process.env.EMAIL_FROM;
-const emailFromName = process.env.EMAIL_FROM_NAME || 'PetCare';
+const emailFromName = process.env.EMAIL_FROM_NAME || 'Vethra';
 
 let brevoClient = null;
 
@@ -34,12 +34,12 @@ const sendEmail = async ({ to, subject, html, text }) => {
 };
 
 const sendPasswordResetEmail = async ({ to, name, resetUrl }) => {
-  const subject = 'Reset your PetCare password';
+  const subject = 'Reset your Vethra password';
   const greeting = name ? `Hi ${name},` : 'Hi,';
 
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 560px; margin: 0 auto; color: #0f172a;">
-      <h2 style="color: #0f766e; margin-bottom: 8px;">PetCare Platform</h2>
+      <h2 style="color: #0f766e; margin-bottom: 8px;">Vethra</h2>
       <p>${greeting}</p>
       <p>We received a request to reset your password. Click the button below to choose a new one. This link expires in 1 hour.</p>
       <p style="margin: 28px 0;">
@@ -58,7 +58,7 @@ const sendPasswordResetEmail = async ({ to, name, resetUrl }) => {
 
   const text = `${greeting}
 
-We received a request to reset your PetCare password.
+We received a request to reset your Vethra password.
 
 Reset your password: ${resetUrl}
 
@@ -70,7 +70,7 @@ This link expires in 1 hour. If you did not request this, you can ignore this em
 const emailWrapper = (subject, body) => {
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 560px; margin: 0 auto; color: #0f172a;">
-      <h2 style="color: #0f766e;">PetCare Platform</h2>
+      <h2 style="color: #0f766e;">Vethra</h2>
       ${body}
     </div>`;
   const text = body.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();

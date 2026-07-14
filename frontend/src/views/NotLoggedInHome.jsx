@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import PublicShell from '../components/PublicShell';
+import BrandLogo from '../components/BrandLogo';
 import { IconCalendar, IconClipboard, IconHeart, IconPaw, IconUsers } from '../components/icons';
 
 const features = [
@@ -40,8 +41,7 @@ export default function NotLoggedInHome() {
         <div className="container landing-hero-grid">
           <div className="landing-hero-copy">
             <div className="brand-badge">
-              <span className="brand-mark">P</span>
-              PetCare Platform
+              <BrandLogo />
             </div>
             <h1 className="landing-title">Digital healthcare for every pet</h1>
             <p className="landing-lead">

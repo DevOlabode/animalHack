@@ -1,14 +1,12 @@
-# AnimalHack 2026 Project Choice
+# Vethra
 
-## Project Name (Working Titles)
+**AnimalHack 2026** — Digital healthcare platform for pets
 
-* VetVault
-* PetTimeline
-* PawCare
-* VetSync
-* PetCareOS
+## Project Name
 
-**Recommended:** PetTimeline or VetVault
+**Vethra** — a shared platform where pet owners and veterinary clinics manage medical records, appointments, diagnoses, prescriptions, and follow-up care.
+
+_Previous working titles: VetVault, PetTimeline, PawCare, VetSync, PetCareOS_
 
 ---
 
