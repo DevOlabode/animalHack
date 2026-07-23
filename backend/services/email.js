@@ -77,43 +77,75 @@ const emailWrapper = (subject, body) => {
   return { subject, html, text };
 };
 
-const sendAppointmentBookedEmail = async ({ to, ownerName, petName, clinicName, date, time }) => {
+const sendAppointmentBookedEmail = async ({ to, ownerName, petName, clinicName, date, time, reason }) => {
   const { subject, html, text } = emailWrapper(
     'Appointment request submitted',
     `<p>Hi ${ownerName},</p>
      <p>Your appointment request for <strong>${petName}</strong> at <strong>${clinicName}</strong> has been submitted.</p>
      <p><strong>Date:</strong> ${date}<br/><strong>Time:</strong> ${time}</p>
+     ${reason ? `<p><strong>Reason:</strong> ${reason}</p>` : ''}
      <p>You'll receive another email once the clinic confirms.</p>`
   );
   return sendEmail({ to, subject, html, text });
 };
 
-const sendAppointmentConfirmedEmail = async ({ to, ownerName, petName, clinicName, date, time }) => {
+const sendClinicNewBookingEmail = async ({
+  to, clinicName, ownerName, petName, species, breed, allergies, date, time, reason, appointmentsUrl,
+}) => {
   const { subject, html, text } = emailWrapper(
-    'Appointment confirmed',
-    `<p>Hi ${ownerName},</p>
-     <p>Your appointment for <strong>${petName}</strong> at <strong>${clinicName}</strong> has been confirmed.</p>
-     <p><strong>Date:</strong> ${date}<br/><strong>Time:</strong> ${time}</p>`
+    `New appointment request — ${petName}`,
+    `<p>Hi ${clinicName},</p>
+     <p>You have a new appointment request.</p>
+     <p>
+       <strong>Owner:</strong> ${ownerName}<br/>
+       <strong>Pet:</strong> ${petName} (${species || '—'}${breed ? `, ${breed}` : ''})<br/>
+       <strong>Allergies:</strong> ${allergies || 'None listed'}<br/>
+       <strong>Date:</strong> ${date}<br/>
+       <strong>Time:</strong> ${time}<br/>
+       <strong>Reason:</strong> ${reason}
+     </p>
+     <p style="margin: 24px 0;">
+       <a href="${appointmentsUrl}" style="background: #0f766e; color: #ffffff; padding: 12px 20px; border-radius: 8px; text-decoration: none; font-weight: 600;">
+         Review pending requests
+       </a>
+     </p>`
   );
   return sendEmail({ to, subject, html, text });
 };
 
-const sendAppointmentCancelledEmail = async ({ to, ownerName, petName, clinicName, date, time }) => {
+const sendAppointmentConfirmedEmail = async ({ to, ownerName, petName, clinicName, date, time, reason }) => {
   const { subject, html, text } = emailWrapper(
-    'Appointment cancelled',
+    `Appointment confirmed — ${clinicName}`,
     `<p>Hi ${ownerName},</p>
-     <p>Your appointment for <strong>${petName}</strong> at <strong>${clinicName}</strong> on ${date} at ${time} has been cancelled.</p>`
+     <p>Your appointment for <strong>${petName}</strong> at <strong>${clinicName}</strong> has been confirmed.</p>
+     <p><strong>Date:</strong> ${date}<br/><strong>Time:</strong> ${time}</p>
+     ${reason ? `<p><strong>Reason:</strong> ${reason}</p>` : ''}`
+  );
+  return sendEmail({ to, subject, html, text });
+};
+
+const sendAppointmentCancelledEmail = async ({
+  to, recipientName, ownerName, petName, clinicName, date, time, reason, cancelledBy,
+}) => {
+  const who = cancelledBy === 'owner' ? (ownerName || 'the pet owner') : (clinicName || 'the clinic');
+  const { subject, html, text } = emailWrapper(
+    `Appointment cancelled — ${petName}`,
+    `<p>Hi ${recipientName},</p>
+     <p>The appointment for <strong>${petName}</strong> at <strong>${clinicName}</strong> on ${date} at ${time} has been cancelled by <strong>${who}</strong>.</p>
+     ${reason ? `<p><strong>Reason:</strong> ${reason}</p>` : ''}`
   );
   return sendEmail({ to, subject, html, text });
 };
 
 const sendReminderEmail = async ({ to, ownerName, petName, title, message, dueDate }) => {
+  const frontendOrigin = process.env.FRONTEND_ORIGIN || 'http://localhost:5173';
   const { subject, html, text } = emailWrapper(
     `Reminder: ${title}`,
     `<p>Hi ${ownerName},</p>
      <p>Reminder for <strong>${petName}</strong>: ${title}</p>
      <p>${message || ''}</p>
-     <p><strong>Due:</strong> ${new Date(dueDate).toLocaleString()}</p>`
+     <p><strong>Due:</strong> ${new Date(dueDate).toLocaleString()}</p>
+     <p><a href="${frontendOrigin}/reminders">Open reminders</a></p>`
   );
   return sendEmail({ to, subject, html, text });
 };
@@ -125,6 +157,7 @@ module.exports = {
   sendEmail,
   sendPasswordResetEmail,
   sendAppointmentBookedEmail,
+  sendClinicNewBookingEmail,
   sendAppointmentConfirmedEmail,
   sendAppointmentCancelledEmail,
   sendReminderEmail,

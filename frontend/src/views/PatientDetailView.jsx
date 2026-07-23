@@ -14,6 +14,7 @@ export default function PatientDetailView() {
   const [timeline, setTimeline] = useState([]);
   const [prescriptions, setPrescriptions] = useState([]);
   const [tab, setTab] = useState('timeline');
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [diagForm, setDiagForm] = useState({ diagnosis: '', clinicalNotes: '', treatmentPlan: '' });
@@ -21,6 +22,7 @@ export default function PatientDetailView() {
   const [remForm, setRemForm] = useState({ type: 'medication', title: '', message: '', dueDate: '' });
 
   const load = async () => {
+    setLoading(true);
     try {
       const [p, t, rx] = await Promise.all([
         fetchPet(id),
@@ -30,8 +32,12 @@ export default function PatientDetailView() {
       setPet(p);
       setTimeline(t);
       setPrescriptions(rx);
+      setError('');
     } catch (e) {
       setError(e.message);
+      setPet(null);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -40,6 +46,7 @@ export default function PatientDetailView() {
   const submitDiagnosis = async (e) => {
     e.preventDefault();
     setError('');
+    setSuccess('');
     try {
       await createDiagnosis({ petId: id, ...diagForm });
       setSuccess('Diagnosis recorded');
@@ -50,6 +57,8 @@ export default function PatientDetailView() {
 
   const submitRx = async (e) => {
     e.preventDefault();
+    setError('');
+    setSuccess('');
     try {
       await createPrescription({ petId: id, ...rxForm });
       setSuccess('Prescription added');
@@ -60,6 +69,8 @@ export default function PatientDetailView() {
 
   const submitReminder = async (e) => {
     e.preventDefault();
+    setError('');
+    setSuccess('');
     try {
       await createReminder({ petId: id, ...remForm });
       setSuccess('Reminder scheduled');
@@ -68,7 +79,21 @@ export default function PatientDetailView() {
     } catch (err) { setError(err.message); }
   };
 
-  if (!pet) return <AppShell><div className="loading-screen" style={{ minHeight: '40vh' }}><div className="spinner" /></div></AppShell>;
+  if (loading) {
+    return <AppShell><div className="loading-screen" style={{ minHeight: '40vh' }}><div className="spinner" /></div></AppShell>;
+  }
+
+  if (!pet) {
+    return (
+      <AppShell>
+        <div className="card">
+          <h1 className="page-title">Patient not found</h1>
+          <p className="text-muted">{error || 'This patient record could not be loaded.'}</p>
+          <Link to="/patients" className="btn btn-secondary" style={{ marginTop: '1rem' }}>Back to patients</Link>
+        </div>
+      </AppShell>
+    );
+  }
 
   const vetTabs = [
     { id: 'timeline', label: 'Timeline' },

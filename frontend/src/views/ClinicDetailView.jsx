@@ -20,6 +20,7 @@ export default function ClinicDetailView() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(true);
+  const [booking, setBooking] = useState(false);
 
   useEffect(() => {
     fetchClinic(id).then(setClinic).catch((e) => setError(e.message)).finally(() => setLoading(false));
@@ -35,11 +36,19 @@ export default function ClinicDetailView() {
     e.preventDefault();
     setError('');
     setSuccess('');
+    setBooking(true);
     try {
       await bookAppointment({ petId, clinicId: id, date, time, reason });
       setSuccess('Appointment requested! The clinic will confirm shortly.');
+      setPetId('');
+      setDate('');
+      setTime('');
+      setReason('');
+      setSlots([]);
     } catch (err) {
       setError(err.message);
+    } finally {
+      setBooking(false);
     }
   };
 
@@ -91,9 +100,19 @@ export default function ClinicDetailView() {
             </div>
             <div className="form-group">
               <label>Reason for visit</label>
-              <input value={reason} onChange={(e) => setReason(e.target.value)} required />
+              <textarea
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+                required
+                minLength={3}
+                maxLength={500}
+                rows={3}
+                placeholder="Describe symptoms or reason for the visit"
+              />
             </div>
-            <button type="submit" className="btn btn-primary">Request appointment</button>
+            <button type="submit" className="btn btn-primary" disabled={booking}>
+              {booking ? 'Submitting…' : 'Request appointment'}
+            </button>
           </form>
         </div>
       ) : (

@@ -3,8 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import AuthLayout from '../components/AuthLayout';
 import { useAuth } from '../context/AuthContext';
 import { parseAuthResponse } from '../../services/auth';
-
-const API_BASE = '/api';
+import API_BASE from '../../services/config';
 
 export default function ClinicSignUpView() {
   const [name, setName] = useState('');

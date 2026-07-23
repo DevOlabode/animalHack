@@ -13,6 +13,11 @@ const TreatmentTask = require('../models/TreatmentTask');
 const DEMO_PASSWORD = 'demo123456';
 
 const seed = async () => {
+  if (process.env.NODE_ENV === 'production' && process.env.ALLOW_SEED !== 'true') {
+    console.error('[SEED] Refusing to run in production. Set ALLOW_SEED=true to override.');
+    process.exit(1);
+  }
+
   await mongoose.connect(process.env.DB_URL);
   console.log('[SEED] Connected to MongoDB');
 

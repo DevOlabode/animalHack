@@ -1,9 +1,14 @@
-const API = '/api';
+import API from './config';
+
 const opts = { credentials: 'include' };
 
 async function req(url, options = {}) {
-  const res = await fetch(`${API}${url}`, { ...opts, ...options, headers: { 'Content-Type': 'application/json', ...options.headers } });
-  const data = await res.json();
+  const res = await fetch(`${API}${url}`, {
+    ...opts,
+    ...options,
+    headers: { 'Content-Type': 'application/json', ...options.headers },
+  });
+  const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.message || 'Request failed');
   return data.data;
 }
@@ -12,10 +17,20 @@ export const fetchClinics = () => req('/clinics').then((d) => d.clinics);
 export const fetchClinic = (id) => req(`/clinics/${id}`).then((d) => d.clinic);
 export const fetchClinicSlots = (id, date) => req(`/clinics/${id}/slots?date=${date}`).then((d) => d.slots);
 
-export const fetchOwnerAppointments = () => req('/appointments/owner').then((d) => d.appointments);
-export const fetchClinicAppointments = () => req('/appointments/clinic').then((d) => d.appointments);
+export const fetchOwnerAppointments = (status) => {
+  const q = status ? `?status=${encodeURIComponent(status)}` : '';
+  return req(`/appointments/owner${q}`).then((d) => d.appointments);
+};
+export const fetchClinicAppointments = (status) => {
+  const q = status ? `?status=${encodeURIComponent(status)}` : '';
+  return req(`/appointments/clinic${q}`).then((d) => d.appointments);
+};
 export const bookAppointment = (body) => req('/appointments', { method: 'POST', body: JSON.stringify(body) }).then((d) => d.appointment);
-export const updateAppointmentStatus = (id, status) => req(`/appointments/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status }) }).then((d) => d.appointment);
+export const updateAppointmentStatus = (id, { status, cancellationReason } = {}) =>
+  req(`/appointments/${id}/status`, {
+    method: 'PATCH',
+    body: JSON.stringify({ status, cancellationReason }),
+  }).then((d) => d.appointment);
 
 export const fetchTimeline = (petId) => req(`/medical/pets/${petId}/timeline`).then((d) => d.timeline);
 export const fetchPrescriptions = (petId) => req(`/medical/pets/${petId}/prescriptions`).then((d) => d.prescriptions);

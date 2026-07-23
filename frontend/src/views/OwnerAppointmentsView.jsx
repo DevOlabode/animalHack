@@ -3,23 +3,50 @@ import { Link } from 'react-router-dom';
 import AppShell from '../components/AppShell';
 import PageHeader from '../components/PageHeader';
 import EmptyState from '../components/EmptyState';
+import CancelReasonModal from '../components/CancelReasonModal';
 import { IconCalendar } from '../components/icons';
 import { fetchOwnerAppointments, updateAppointmentStatus } from '../../services/api';
 
-const statusClass = { pending: 'badge-pending', confirmed: 'badge-confirmed', cancelled: 'badge-cancelled', completed: 'badge-completed' };
+const statusClass = {
+  pending: 'badge-pending',
+  confirmed: 'badge-confirmed',
+  cancelled: 'badge-cancelled',
+  completed: 'badge-completed',
+};
+
+const FILTERS = [
+  { id: 'all', label: 'All' },
+  { id: 'pending', label: 'Pending' },
+  { id: 'confirmed', label: 'Confirmed' },
+  { id: 'cancelled', label: 'Cancelled' },
+  { id: 'completed', label: 'Completed' },
+];
 
 export default function OwnerAppointmentsView() {
   const [appointments, setAppointments] = useState([]);
+  const [filter, setFilter] = useState('all');
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [cancelId, setCancelId] = useState(null);
 
-  const load = () => fetchOwnerAppointments().then(setAppointments).catch((e) => setError(e.message));
+  const load = async () => {
+    setLoading(true);
+    try {
+      const data = await fetchOwnerAppointments();
+      setAppointments(data);
+      setError('');
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => { load(); }, []);
 
-  const cancel = async (id) => {
-    await updateAppointmentStatus(id, 'cancelled');
-    load();
-  };
+  const visible = filter === 'all'
+    ? appointments
+    : appointments.filter((a) => a.status === filter);
 
   return (
     <AppShell>
@@ -32,7 +59,24 @@ export default function OwnerAppointmentsView() {
 
       {error && <div className="alert alert-error">{error}</div>}
 
-      {appointments.length === 0 ? (
+      <div className="filter-tabs" role="tablist" aria-label="Filter appointments">
+        {FILTERS.map((f) => (
+          <button
+            key={f.id}
+            type="button"
+            role="tab"
+            aria-selected={filter === f.id}
+            className={`filter-tab ${filter === f.id ? 'is-active' : ''}`}
+            onClick={() => setFilter(f.id)}
+          >
+            {f.label}
+          </button>
+        ))}
+      </div>
+
+      {loading ? (
+        <div className="loading-screen" style={{ minHeight: '30vh' }}><div className="spinner" /></div>
+      ) : visible.length === 0 ? (
         <div className="card">
           <EmptyState
             icon={IconCalendar}
@@ -43,7 +87,7 @@ export default function OwnerAppointmentsView() {
         </div>
       ) : (
         <div className="dashboard-grid">
-          {appointments.map((a) => (
+          {visible.map((a) => (
             <div key={a._id} className="card appointment-card">
               <div className="appointment-card-header">
                 <div>
@@ -57,14 +101,30 @@ export default function OwnerAppointmentsView() {
                   </div>
                 </div>
                 {(a.status === 'pending' || a.status === 'confirmed') && (
-                  <button type="button" className="btn btn-danger btn-sm" onClick={() => cancel(a._id)}>Cancel</button>
+                  <button type="button" className="btn btn-danger btn-sm" onClick={() => setCancelId(a._id)}>
+                    Cancel
+                  </button>
                 )}
               </div>
-              <p>{a.reason}</p>
+              <p className="appointment-reason"><strong>Reason:</strong> {a.reason}</p>
+              {a.cancellationReason && (
+                <p className="text-muted"><strong>Cancelled:</strong> {a.cancellationReason}</p>
+              )}
             </div>
           ))}
         </div>
       )}
+
+      <CancelReasonModal
+        open={Boolean(cancelId)}
+        title="Cancel appointment"
+        confirmLabel="Cancel appointment"
+        onClose={() => setCancelId(null)}
+        onConfirm={async (cancellationReason) => {
+          await updateAppointmentStatus(cancelId, { status: 'cancelled', cancellationReason });
+          await load();
+        }}
+      />
     </AppShell>
   );
 }

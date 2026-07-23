@@ -1,0 +1,28 @@
+# Example Render web service for the Vethra API.
+# Create a Web Service from this repo with root directory `backend`.
+
+services:
+  - type: web
+    name: vethra-api
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: DB_URL
+        sync: false
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: FRONTEND_ORIGIN
+        sync: false
+      - key: BREVO_API_KEY
+        sync: false
+      - key: EMAIL_FROM
+        sync: false
+      - key: EMAIL_FROM_NAME
+        value: Vethra

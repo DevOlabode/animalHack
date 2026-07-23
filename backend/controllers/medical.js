@@ -37,12 +37,13 @@ const getTimeline = async (req, res, next) => {
     }
 
     const petId = pet._id;
-    const [appointments, diagnoses, prescriptions, reminders, documents] = await Promise.all([
+    const [appointments, diagnoses, prescriptions, reminders, documents, tasks] = await Promise.all([
       Appointment.find({ petId }).populate('clinicId'),
       Diagnosis.find({ petId }).populate('clinicId'),
       Prescription.find({ petId }).populate('clinicId'),
       Reminder.find({ petId }),
       MedicalDocument.find({ petId }),
+      TreatmentTask.find({ petId }),
     ]);
 
     const entries = [
@@ -73,6 +74,13 @@ const getTimeline = async (req, res, next) => {
         title: r.title,
         description: r.message,
         data: r,
+      })),
+      ...tasks.map((t) => ({
+        type: 'task',
+        date: t.dueDate || t.updatedAt || t.createdAt,
+        title: `Treatment task: ${t.title}`,
+        description: `Status: ${t.status}${t.description ? ` — ${t.description}` : ''}`,
+        data: t,
       })),
       ...documents.map((d) => ({
         type: 'document',
@@ -113,7 +121,15 @@ const createDiagnosis = async (req, res, next) => {
     });
 
     if (appointmentId) {
-      await Appointment.findByIdAndUpdate(appointmentId, { status: 'completed' });
+      const appointment = await Appointment.findOne({
+        _id: appointmentId,
+        petId,
+        clinicId: clinic._id,
+      });
+      if (appointment && appointment.status === 'confirmed') {
+        appointment.status = 'completed';
+        await appointment.save();
+      }
     }
 
     res.status(201).json({ status: 'success', data: { diagnosis: record } });
@@ -180,8 +196,8 @@ const createReminder = async (req, res, next) => {
       return res.status(400).json({ status: 'error', message: 'Pet, type, title, and due date are required' });
     }
 
-    const pet = await Pet.findById(petId);
-    if (!pet) return res.status(404).json({ status: 'error', message: 'Pet not found' });
+    const pet = await canAccessPet(req.user, petId);
+    if (!pet) return res.status(404).json({ status: 'error', message: 'Pet not found or access denied' });
 
     const reminder = await Reminder.create({
       petId,

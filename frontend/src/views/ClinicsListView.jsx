@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import AppShell from '../components/AppShell';
 import PageHeader from '../components/PageHeader';
+import EmptyState from '../components/EmptyState';
 import { useEffect, useState } from 'react';
 import { fetchClinics } from '../../services/api';
 import { IconUsers } from '../components/icons';
@@ -26,6 +27,14 @@ export default function ClinicsListView() {
 
       {loading ? (
         <div className="loading-screen" style={{ minHeight: '30vh' }}><div className="spinner" aria-label="Loading" /></div>
+      ) : clinics.length === 0 ? (
+        <div className="card">
+          <EmptyState
+            icon={IconUsers}
+            title="No clinics yet"
+            description="Clinic profiles will appear here once veterinary partners join Vethra."
+          />
+        </div>
       ) : (
         <div className="pet-grid">
           {clinics.map((c) => (

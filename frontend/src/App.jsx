@@ -20,6 +20,7 @@ import ClinicPatientsView from './views/ClinicPatientsView';
 import PatientDetailView from './views/PatientDetailView';
 import RemindersView from './views/RemindersView';
 import AboutView from './views/AboutView';
+import NotFoundView from './views/NotFoundView';
 import RequireAuth from './components/RequireAuth';
 import RequirePetOwner from './components/RequirePetOwner';
 import RequireVet from './components/RequireVet';
@@ -57,6 +58,7 @@ function App() {
           <Route path="/clinic/appointments" element={<RequireVet><ClinicAppointmentsView /></RequireVet>} />
           <Route path="/patients" element={<RequireVet><ClinicPatientsView /></RequireVet>} />
           <Route path="/patients/:id" element={<RequireVet><PatientDetailView /></RequireVet>} />
+          <Route path="*" element={<NotFoundView />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
